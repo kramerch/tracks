@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { TracksNavigationProp } from '../../data/types';
+import { TracksNavigationProp } from '../data/types';
 import { Text, Input, Button } from 'react-native-elements';
 import Spacer from '../components/Spacer';
 import { Context as AuthContext } from '../context/AuthContext';

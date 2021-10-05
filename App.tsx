@@ -1,8 +1,8 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator, NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useContext } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import AccountScreen from './src/screens/AccountScreen';
 import SignInScreen from './src/screens/SignInScreen';
@@ -10,7 +10,9 @@ import SignUpScreen from './src/screens/SignUpScreen';
 import TrackCreateScreen from './src/screens/TrackCreateScreen';
 import TrackDetailScreen from './src/screens/TrackDetailScreen';
 import TrackListScreen from './src/screens/TrackListScreen';
-import { Provider as AuthProvider } from './src/context/AuthContext';
+import { Context as AuthContext, Provider as AuthProvider } from './src/context/AuthContext';
+import { setNavigator } from './src/navigation.service';
+import { ParamListBase } from "@react-navigation/routers";
 
 const LoginStack = createNativeStackNavigator();
 const MainTab = createBottomTabNavigator();
@@ -77,17 +79,20 @@ const MainStackScreen = () => {
     )
 }
 
-const App = () => {
+const App: React.FC<{ ref: (navigator: NativeStackNavigationProp<ParamListBase>) => void }> = () => {
+    const { state } = useContext(AuthContext);
+
     return (
         <NavigationContainer theme={AppTheme}>
             <FullStack.Navigator screenOptions={{ headerShown: false }}>
-                <FullStack.Screen 
-                    name="LoginStack" 
-                    component={LoginStackScreen} />
-                
-                <FullStack.Screen
-                    name="MainStack"
-                    component={MainStackScreen} />
+                { state.token
+                    ? <FullStack.Screen
+                        name="MainStack"
+                        component={MainStackScreen} />
+                    : <FullStack.Screen
+                        name="LoginStack" 
+                        component={LoginStackScreen} /> 
+                }
             </FullStack.Navigator>
         </NavigationContainer>
     )
@@ -96,7 +101,7 @@ const App = () => {
 export default () => {
     return (
         <AuthProvider>
-            <App />
+            <App ref={(navigator: NativeStackNavigationProp<ParamListBase>) => { setNavigator(navigator) }} />
         </AuthProvider>
     )
 }
